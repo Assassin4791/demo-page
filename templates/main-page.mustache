@@ -1,0 +1,100 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      .text-task {
+        max-width: 750px;
+      }
+      .button,
+      .button-close,
+      .text-task {
+        margin-bottom: 8px;
+        font-family:Arial;
+      }
+      .button-close,
+      .button {
+        -moz-box-shadow:inset 0px 1px 0px 0px #caefab;
+        -webkit-box-shadow:inset 0px 1px 0px 0px #caefab;
+        box-shadow:inset 0px 1px 0px 0px #caefab;
+        background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #77d42a), color-stop(1, #5cb811));
+        background:-moz-linear-gradient(top, #77d42a 5%, #5cb811 100%);
+        background:-webkit-linear-gradient(top, #77d42a 5%, #5cb811 100%);
+        background:-o-linear-gradient(top, #77d42a 5%, #5cb811 100%);
+        background:-ms-linear-gradient(top, #77d42a 5%, #5cb811 100%);
+        background:linear-gradient(to bottom, #77d42a 5%, #5cb811 100%);
+        filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77d42a', endColorstr='#5cb811',GradientType=0);
+        background-color:#77d42a;
+        -moz-border-radius:6px;
+        -webkit-border-radius:6px;
+        border-radius:0px;
+        border:1px solid #268a16;
+        display:inline-block;
+        cursor:pointer;
+        color:#306108;
+        font-family:Arial;
+        font-size:15px;
+        font-weight:bold;
+        padding:6px 24px;
+        text-decoration:none;
+        text-shadow:0px 1px 0px #aade7c;
+      }
+      .button-close,
+      .button:hover {
+        background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #5cb811), color-stop(1, #77d42a));
+        background:-moz-linear-gradient(top, #5cb811 5%, #77d42a 100%);
+        background:-webkit-linear-gradient(top, #5cb811 5%, #77d42a 100%);
+        background:-o-linear-gradient(top, #5cb811 5%, #77d42a 100%);
+        background:-ms-linear-gradient(top, #5cb811 5%, #77d42a 100%);
+        background:linear-gradient(to bottom, #5cb811 5%, #77d42a 100%);
+        filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#5cb811', endColorstr='#77d42a',GradientType=0);
+        background-color:#5cb811;
+      }
+      .button-close,
+      .button:active {
+        position:relative;
+        top:1px;
+      }
+      .button-close {
+        padding: 6px 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <table style="margin: auto">
+      {{#tasks}}
+        <tr class="table-row js-table-row">
+          <td>
+            <div class="text-task">{{{caption}}}</div>
+          </td>
+          {{#urls}}
+            <td style="vertical-align: bottom">
+              <a
+                class="button"
+                target="_blank"
+                href="{{href}}">
+                {{caption}}
+              </a>
+            </td>
+          {{/urls}}
+          {{#closeButton}}
+          <td style="vertical-align: bottom">
+            <a
+              class="button-close js-button-close">
+              &#10008
+            </button>
+          </td>
+          {{/closeButton}}
+        </tr>
+      {{/tasks}}
+    </table>
+    <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script>
+      $(document).ready(function() {
+        return $('.js-button-close').on('click', function(e) {
+          return $(e.currentTarget).closest('.js-table-row').remove();
+        });
+      });
+    </script>
+  </body>
+</html>
