@@ -1,6 +1,6 @@
 {
   "name": "",
   "cookie": "",
-  "sprintUrl": "",
+  "sprintUrls": [""],
   "output": "../../www/demo"
 }

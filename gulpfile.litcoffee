@@ -9,24 +9,10 @@
 
     config = require './config.json'
 
-
-    gulp.task 'default', gulpSequence 'load-tasks', 'generate'
-
-
-    gulp.task 'generate', (cb) ->
-      tasks = require('./tasks.json').tasks
-      tasks = _.map tasks, (value) ->
-        value.urls = _.filter value.urls, (url) -> !!url.href
-        value
-
-      gulp.src "./templates/*.mustache"
-        .pipe(mustache(tasks: tasks))
-        .pipe(rename((path) -> path.extname = '.html'))
-        .pipe(gulp.dest(config.output))
-
-    gulp.task 'load-tasks', (cb) ->
+    loadSprint = (url, callback) ->
+      console.log "Start load #{url}"
       options =
-        url: config.sprintUrl
+        url: url
         cookies: [
           {
             name: '_redmine_session'
@@ -37,11 +23,12 @@
       client = request.createClient options
       client options.url, (error, response, body) ->
         if response.statusCode != 200
-          return cb()
+          console.error "Sprint #{url} not loaded"
+          return callback()
         jsdom.env body, ["http://code.jquery.com/jquery.js"], (e, window) ->
           if e
-            console.warn 'e', e
-            return cb()
+            console.error 'e', e
+            return callback()
           $ = window.$
           values = window.$ 'div.t:contains("' + config.name + '")'
           values = _.map values, (value) -> $(value).closest '.issue'
@@ -56,13 +43,40 @@
                 href: ''
               }
             ]
-          content = JSON.stringify {tasks: values}, null, 2
-          fs.writeFile "./tasks.json", content, 'utf8', (err) ->
-            if err
-              cb()
-              return console.log(err)
-            console.log "The file was saved!"
+          console.log "Sprint #{url} loaded"
+          callback values
+
+    gulp.task 'default', gulpSequence 'load-tasks', 'generate'
+
+    gulp.task 'generate', (cb) ->
+      tasks = require('./tasks.json').tasks
+      tasks = _.map tasks, (value) ->
+        value.urls = _.filter value.urls, (url) -> !!url.href
+        value
+
+      gulp.src "./templates/*.mustache"
+        .pipe(mustache(tasks: tasks))
+        .pipe(rename((path) -> path.extname = '.html'))
+        .pipe(gulp.dest(config.output))
+
+
+    gulp.task 'load-tasks', (cb) ->
+
+      load = (urls, tasks = []) ->
+        [first, other...] = urls
+
+        if first
+          loadSprint first, (loadedTasks = []) ->
+            load other, tasks.concat loadedTasks
+          return
+
+        content = JSON.stringify {tasks: tasks}, null, 2
+        fs.writeFile "./tasks.json", content, 'utf8', (err) ->
+          if err
             cb()
+            return console.log(err)
+          console.log "The file was saved!"
+          cb()
+
+      load config.sprintUrls
       return
-
-
